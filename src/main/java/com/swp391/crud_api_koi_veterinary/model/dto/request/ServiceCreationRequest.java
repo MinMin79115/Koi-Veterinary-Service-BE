@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Koi_vetServiceUpdateRequest {
+public class ServiceCreationRequest {
     String serviceName;
     String serviceDescription;
 }

@@ -1,7 +1,7 @@
 package com.swp391.crud_api_koi_veterinary.service;
 
-import com.swp391.crud_api_koi_veterinary.model.dto.request.Koi_vetServiceCreationRequest;
-import com.swp391.crud_api_koi_veterinary.model.dto.request.Koi_vetServiceUpdateRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.entity.Services;
 import com.swp391.crud_api_koi_veterinary.repository.ServiceRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class Koi_vetService{
     private final ServiceRepository serviceRepository;
 
 //1. Tạo 1 Service
-    public Services createService(Koi_vetServiceCreationRequest request) {
+    public Services createService(ServiceCreationRequest request) {
         Services service = new Services();
         service.setServiceName(request.getServiceName());
         service.setServiceDescription(request.getServiceDescription());
@@ -27,11 +27,11 @@ public class Koi_vetService{
 
 //2. Lấy danh sách Services
     public List<Services> getAllServices() {
-        return serviceRepository.findAll();
+            return serviceRepository.findAll();
     }
 
-    //3. Update 1 Service theo Id
-    public Services updateService(int serviceId, Koi_vetServiceUpdateRequest request) {
+//3. Update 1 Service theo Id
+    public Services updateService(int serviceId, ServiceUpdateRequest request) {
         Services service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
         

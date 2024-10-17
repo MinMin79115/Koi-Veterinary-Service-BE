@@ -1,8 +1,8 @@
 package com.swp391.crud_api_koi_veterinary.controller;
 
 
-import com.swp391.crud_api_koi_veterinary.model.dto.request.Koi_vetServiceCreationRequest;
-import com.swp391.crud_api_koi_veterinary.model.dto.request.Koi_vetServiceUpdateRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.entity.Services;
 import com.swp391.crud_api_koi_veterinary.service.Koi_vetService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class ServicesController {
 
     //API tạo 1 service
     @PostMapping
-    public Services createService(@RequestBody Koi_vetServiceCreationRequest request){
+    public Services createService(@RequestBody ServiceCreationRequest request){
         return koi_vetService.createService(request);
     }
 
@@ -32,7 +32,7 @@ public class ServicesController {
 
     //API update
     @PutMapping("/{serviceId}")
-    public Services updateService(@PathVariable int serviceId, @RequestBody Koi_vetServiceUpdateRequest request){
+    public Services updateService(@PathVariable int serviceId, @RequestBody ServiceUpdateRequest request){
         return koi_vetService.updateService(serviceId, request);
     }
 

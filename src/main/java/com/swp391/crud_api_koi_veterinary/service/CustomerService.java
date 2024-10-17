@@ -17,7 +17,7 @@ public class CustomerService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    //Thêm 1 account
+    // Thêm 1 account
     public UserAccount createUser(UserCreationRequest request) {
         UserAccount user = new UserAccount();
         user.setUsername(request.getUsername());
@@ -47,12 +47,12 @@ public class CustomerService {
         return user;
     }
 
-    //Xóa 1 account theo id
-    public void deleteAccount(int userId){
+    // Xóa 1 account theo id
+    public void deleteAccount(int userId) {
         userRepository.deleteById(userId);
     }
 
-    //Update thông tin cá nhân
+    // Update thông tin cá nhân
     public UserAccount updateUser(int userId, UserUpdateRequest request) {
         UserAccount userAccount = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
