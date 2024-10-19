@@ -61,6 +61,9 @@ public class CustomerService {
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             userAccount.setPassword(passwordEncoder.encode(request.getPassword()));
         }
+        if (request.getUsername() != null) {
+            userAccount.setUsername(request.getUsername());
+        }
         // Các trường khác được cập nhật nếu có giá trị mới
         if (request.getEmail() != null) {
             userAccount.setEmail(request.getEmail());
