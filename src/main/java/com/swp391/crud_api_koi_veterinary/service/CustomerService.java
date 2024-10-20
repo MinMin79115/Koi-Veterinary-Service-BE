@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,11 +63,13 @@ public class CustomerService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         // Kiểm tra xem người dùng có phải là Veterinarian không
         if (user.getRole() == Role.VETERINARIAN) {
-            Veterinarian veterinarian = veterinarianRepository.findByUserId(userId)
-                       .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
-            int veterinarianId = veterinarian.getVeterinarianId();
-            // Gọi phương thức deleteVeterinarian
-            veterinarianService.deleteVeterinarian(veterinarianId);
+            Optional<Veterinarian> optionalVeterinarian = veterinarianRepository.findByUserId(userId);
+            if (optionalVeterinarian.isPresent()) { //Nếu có gọi deleteVeterinarian
+                Veterinarian veterinarian = optionalVeterinarian.get();
+                int veterinarianId = veterinarian.getVeterinarianId();
+                // Gọi phương thức deleteVeterinarian
+                veterinarianService.deleteVeterinarian(veterinarianId);
+            }
             userRepository.deleteById(userId);    
         } else {
             userRepository.deleteById(userId); // Xóa tài khoản người dùng

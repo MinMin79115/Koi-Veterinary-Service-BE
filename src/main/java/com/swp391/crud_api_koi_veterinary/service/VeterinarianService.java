@@ -8,6 +8,7 @@ import com.swp391.crud_api_koi_veterinary.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -77,6 +78,7 @@ public class VeterinarianService {
 }
 
 //Delete Vet
+   @Transactional
    public void deleteVeterinarian(int veterinarianId) {
        Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
