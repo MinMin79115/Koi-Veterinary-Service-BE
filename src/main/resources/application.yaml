@@ -8,7 +8,28 @@ spring:
     username: root
     password: 791156
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: thuannmse184301@fpt.edu.vn
+    password: bxhhsrpgawtcfjpf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+payment:
+  vnPay:
+    url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    tmnCode: JBYA959I
+    secretKey: JW9L22EIDFJ2MQJZA54YGWGLQMH21TF6
+    returnUrl: http://localhost:8080/api/v1/payment/vn-pay-callback
+    version: 2.1.0
+    command: pay
+    orderType: other
