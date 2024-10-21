@@ -14,20 +14,21 @@ import java.util.Map;
 public class PaymentService {
         private final VNPayConfig vnpayConfig;
 
-        public PaymentDTO.VNPayResponse createVnPayPayment(HttpServletRequest request, long amount) {
-            Map<String, String> vnpParams = vnpayConfig.getVNPayConfig();
-            vnpParams.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
-            vnpParams.put("vnp_Amount", String.valueOf(amount * 100)); // Số tiền * 100
+    public PaymentDTO.VNPayResponse createVnPayPayment(HttpServletRequest request, long amount, int bookingId) {
+        Map<String, String> vnpParams = vnpayConfig.getVNPayConfig();
+        vnpParams.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
+        vnpParams.put("vnp_Amount", String.valueOf(amount * 100));
+        vnpParams.put("vnp_TxnRef", String.valueOf(bookingId));
 
-            String paymentUrl = vnpayConfig.getVnp_PayUrl() + "?" + VNPayUtil.getPaymentURL(vnpParams, true);
-            String vnpSecureHash = VNPayUtil.hmacSHA512(vnpayConfig.getSecretKey(), VNPayUtil.getPaymentURL(vnpParams, false));
-            paymentUrl += "&vnp_SecureHash=" + vnpSecureHash;
+        String paymentUrl = vnpayConfig.getVnp_PayUrl() + "?" + VNPayUtil.getPaymentURL(vnpParams, true);
+        String vnpSecureHash = VNPayUtil.hmacSHA512(vnpayConfig.getSecretKey(), VNPayUtil.getPaymentURL(vnpParams, false));
+        paymentUrl += "&vnp_SecureHash=" + vnpSecureHash;
 
-            return PaymentDTO.VNPayResponse.builder()
-                    .code("00")
-                    .message("success")
-                    .paymentUrl(paymentUrl)
-                    .build();
-        }
+        return PaymentDTO.VNPayResponse.builder()
+                .code("00")
+                .message("success")
+                .paymentUrl(paymentUrl)
+                .build();
+    }
     }
 

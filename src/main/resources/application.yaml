@@ -5,8 +5,8 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/koiveterian
-    username: root
-    password: 791156
+    username:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   mail:
     host: smtp.gmail.com
@@ -29,7 +29,7 @@ payment:
     url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
     tmnCode: JBYA959I
     secretKey: JW9L22EIDFJ2MQJZA54YGWGLQMH21TF6
-    returnUrl: http://localhost:8080/api/v1/payment/vn-pay-callback
+    returnUrl: http://localhost:8080/api/v1/payment/vnpayback
     version: 2.1.0
     command: pay
     orderType: other
