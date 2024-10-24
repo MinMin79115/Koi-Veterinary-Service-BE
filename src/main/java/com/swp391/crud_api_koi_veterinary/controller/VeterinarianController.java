@@ -2,6 +2,8 @@ package com.swp391.crud_api_koi_veterinary.controller;
 
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianCreationRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotUpdateRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.entity.Veterinarian;
 import com.swp391.crud_api_koi_veterinary.model.entity.VeterinarianTimeSlot;
 import com.swp391.crud_api_koi_veterinary.service.VeterinarianService;
@@ -53,5 +55,17 @@ public class VeterinarianController {
     public String deleteSlot(@PathVariable int slotId) {
         veterinarianService.deleteSlot(slotId);
         return "Slot has been deleted";
+    }
+
+//API update bác sĩ
+    @PutMapping("/{veterinarianId}")
+    Veterinarian updateVet(@PathVariable int veterinarianId, @RequestBody VeterinarianUpdateRequest request) {
+        return veterinarianService.updateVet(veterinarianId, request);
+    }
+
+//API update vetSlot
+    @PutMapping("/slot/{slotId}")
+    VeterinarianTimeSlot updateSlot(@PathVariable int slotId, @RequestBody VeterinarianSlotUpdateRequest request) {
+        return veterinarianService.updateVetSlot(slotId, request);
     }
 }

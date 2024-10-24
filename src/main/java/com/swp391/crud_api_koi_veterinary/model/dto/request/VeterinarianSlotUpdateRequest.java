@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VeterinarianSlotUpdateRequest {
-    private int veterinarianId;
-    private int slotTimeId;
+    private Integer veterinarianId;
+    private Integer slotTimeId;
     SlotStatus status;
 }

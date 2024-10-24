@@ -3,6 +3,8 @@ package com.swp391.crud_api_koi_veterinary.service;
 import com.swp391.crud_api_koi_veterinary.enums.SlotStatus;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianCreationRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotUpdateRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.entity.*;
 import com.swp391.crud_api_koi_veterinary.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -85,5 +87,46 @@ public class VeterinarianService {
        veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
        veterinarianRepository.deleteById(veterinarianId);
    }
+
+//Update Vet
+    public Veterinarian updateVet(int veterinarianId, VeterinarianUpdateRequest request){
+        Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
+                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
+
+        ServicesType servicesType = serviceTypeRepository.findById(request.getServiceTypeId())
+                .orElseThrow(() -> new RuntimeException("Type not found"));
+
+        if (servicesType != null){
+            veterinarian.setServiceTypeId(servicesType);
+        }
+
+        return veterinarianRepository.save(veterinarian);
+    }
+
+//Update Slot
+    public VeterinarianTimeSlot updateVetSlot(int slotId, VeterinarianSlotUpdateRequest request) {
+        VeterinarianTimeSlot slot = veterinarianTimeSlotRepository.findById(slotId)
+                .orElseThrow(() -> new RuntimeException("Slot not found"));
+
+        Veterinarian veterinarian = veterinarianRepository.findById(request.getVeterinarianId())
+                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
+
+        TimeSlot timeSlot = timeSlotRepository.findById(request.getSlotTimeId())
+                .orElseThrow(() -> new RuntimeException("Slot time not found"));
+
+        if (veterinarian != null) {
+            slot.setVeterinarian(veterinarian);
+        }
+
+        if (timeSlot != null) {
+            slot.setTimeSlot(timeSlot);
+        }
+
+        if (request.getStatus() != null) {
+            slot.setSlotStatus(request.getStatus());
+        }
+
+        return veterinarianTimeSlotRepository.save(slot);
+    }
 
 }
