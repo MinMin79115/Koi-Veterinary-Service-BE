@@ -3,17 +3,19 @@ package com.swp391.crud_api_koi_veterinary.controller;
 
 import com.swp391.crud_api_koi_veterinary.model.dto.request.PaymentDTO;
 import com.swp391.crud_api_koi_veterinary.model.dto.response.ResponseObject;
+import com.swp391.crud_api_koi_veterinary.model.entity.Bill;
+import com.swp391.crud_api_koi_veterinary.model.entity.Services;
 import com.swp391.crud_api_koi_veterinary.service.BillService;
 import com.swp391.crud_api_koi_veterinary.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/payment")
@@ -39,5 +41,10 @@ public class PaymentController {
             return new ResponseObject<>(HttpStatus.BAD_REQUEST, "Failed", null);
         }
     }
+//API lấy bill theo bookingId
+    @GetMapping("/{bookingId}")
+    public List<Bill> getServiceById(@PathVariable int bookingId) {
+        return billService.getBillByBookingId(bookingId);
     }
+}
 
