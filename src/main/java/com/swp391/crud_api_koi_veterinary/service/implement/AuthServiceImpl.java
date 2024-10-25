@@ -1,14 +1,14 @@
 package com.swp391.crud_api_koi_veterinary.service.implement;
 
 import com.swp391.crud_api_koi_veterinary.enums.Role;
-import com.swp391.crud_api_koi_veterinary.model.dto.request.AuthenticationRequest;
-import com.swp391.crud_api_koi_veterinary.model.dto.request.StaffCreationRequest;
-import com.swp391.crud_api_koi_veterinary.model.dto.request.UserCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.*;
 import com.swp391.crud_api_koi_veterinary.model.dto.response.AuthenticationResponse;
 import com.swp391.crud_api_koi_veterinary.model.entity.UserAccount;
 import com.swp391.crud_api_koi_veterinary.repository.UserRepository;
 import com.swp391.crud_api_koi_veterinary.service.AuthService;
+import com.swp391.crud_api_koi_veterinary.service.EmailService;
 import com.swp391.crud_api_koi_veterinary.service.JwtService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public AuthenticationResponse localAuthentication(AuthenticationRequest request) {
         try {
@@ -109,6 +110,27 @@ public class AuthServiceImpl implements AuthService {
                 .role(String.valueOf(user.getRole()))
                 .finishTime(LocalDateTime.now())
                 .build();
+    }
+//quên mk
+    public void forgetPassword(EmailForgetRequest request) throws MessagingException {
+        UserAccount userAccount = userRepository.findUserByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
+        if (userAccount != null) {
+            emailService.sendHtmlEmail(request.getEmail(), request.getSubject(), request.getBody());
+        }
+    }
+
+//Đặt lại password
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+        UserAccount userAccount = userRepository.findUserByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (userAccount != null) {
+            userAccount.setPassword(passwordEncoder.encode(request.getPassword()));
+            userRepository.save(userAccount);
+        }
     }
 }
 

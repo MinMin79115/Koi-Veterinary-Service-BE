@@ -13,6 +13,9 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<UserAccount, Integer> {
     @Query(value = "SELECT u FROM UserAccount u WHERE u.username = :username")
     Optional<UserAccount> findUserByUsername(@Param(value = "username") String username);
-    
+
+    @Query(value = "SELECT u FROM UserAccount u WHERE u.email = :email")
+    Optional<UserAccount> findUserByEmail(@Param(value = "email") String email);
+
     List<UserAccount> findByRoleIn(List<String> list);
 }

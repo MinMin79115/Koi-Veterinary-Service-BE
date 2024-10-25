@@ -33,12 +33,7 @@ public class BillService {
     }
 
 //lấy bill theo booking
-    public List<Bill> getBillByBookingId(int bookingId) {
-        //Tìm hóa đơn theo bookingId
-        List<Bill> bill = billRepository.findByBooking_BookingId(bookingId);
-        if (bill.isEmpty()) {
-            throw new RuntimeException("Bill not found");
-        }
-        return bill;
+    public List<Bill> getAllBill() {
+        return billRepository.findAll();
     }
 }
