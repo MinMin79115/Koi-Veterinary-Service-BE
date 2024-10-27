@@ -10,11 +10,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest {
-    String password;
-    String email;
-    String phone;
-    String address;
-    String fullname;
-    String username;
+public class VeterinarianUpdateRequest {
+    int serviceTypeId;
 }
