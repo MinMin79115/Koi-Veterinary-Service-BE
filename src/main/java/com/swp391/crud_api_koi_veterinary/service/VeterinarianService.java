@@ -24,6 +24,7 @@ public class VeterinarianService {
     private final VeterinarianTimeSlotRepository veterinarianTimeSlotRepository;
     private final TimeSlotRepository timeSlotRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
 //Tạo Vet
     public Veterinarian createVeterinarian(VeterinarianCreationRequest request, int userId) {
@@ -84,6 +85,10 @@ public class VeterinarianService {
    public void deleteVeterinarian(int veterinarianId) {
        Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
+       
+       // Cập nhật các booking liên quan
+       bookingRepository.updateVeterinarianToNull(veterinarianId);
+       
        veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
        veterinarianRepository.deleteById(veterinarianId);
    }

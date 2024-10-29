@@ -3,6 +3,7 @@ package com.swp391.crud_api_koi_veterinary.repository;
 import com.swp391.crud_api_koi_veterinary.enums.BookingStatus;
 import com.swp391.crud_api_koi_veterinary.model.entity.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,4 +28,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Query("SELECT b FROM Booking b WHERE b.status = :status")
     List<Booking> findBookingsByStatus(@Param("status") BookingStatus status);
+
+    @Modifying
+    @Query("UPDATE Booking b SET b.veterinarian = null WHERE b.veterinarian.id = :veterinarianId")
+    void updateVeterinarianToNull(@Param("veterinarianId") int veterinarianId);
 }
