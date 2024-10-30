@@ -19,9 +19,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     // Tìm tất cả các booking của một bác sĩ thú y cụ thể
     List<Booking> findByVeterinarian_User_Id(int Id);
 
-    // Tìm tất cả các booking theo trạng thái
-    //List<Booking> findByStatus(BookingStatus status);
-
     // Bạn có thể thêm các phương thức truy vấn tùy chỉnh khác nếu cần
     @Query("SELECT b FROM Booking b WHERE b.user.username = :username AND b.bookingTime >= :startDate AND b.bookingTime <= :endDate")
     List<Booking> findUserBookingsInDateRange(@Param("username") String username, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
@@ -29,7 +26,19 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT b FROM Booking b WHERE b.status = :status")
     List<Booking> findBookingsByStatus(@Param("status") BookingStatus status);
 
+    //đưa vet về null khi bị xóa
     @Modifying
     @Query("UPDATE Booking b SET b.veterinarian = null WHERE b.veterinarian.id = :veterinarianId")
     void updateVeterinarianToNull(@Param("veterinarianId") int veterinarianId);
+
+    //đưa slot về null khi bị xóa vet của slot đó
+    @Modifying
+    @Query("UPDATE Booking b SET b.slot = null WHERE b.slot.id IN (" +
+           "SELECT s.id FROM VeterinarianTimeSlot s WHERE s.veterinarian.id = :veterinarianId)")
+    void updateSlotToNullByVeterinarianId(@Param("veterinarianId") int veterinarianId);
+
+    //đưa slot về null khi bị xóa slot
+    @Modifying
+    @Query("UPDATE Booking b SET b.slot = null WHERE b.slot.id = :slotId")
+    void updateSlotToNullBySlot(@Param("slotId") int slotId);
 }

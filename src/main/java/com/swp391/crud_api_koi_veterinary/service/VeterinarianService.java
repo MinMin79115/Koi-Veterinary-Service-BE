@@ -76,8 +76,14 @@ public class VeterinarianService {
    }
 
 //Delete Slot
+   @Transactional
    public void deleteSlot(int slotId) {
-    veterinarianTimeSlotRepository.deleteById(slotId);
+        VeterinarianTimeSlot timeSlot = veterinarianTimeSlotRepository.findById(slotId)
+                        .orElseThrow(() -> new RuntimeException("Slot not found"));
+
+        bookingRepository.updateSlotToNullBySlot(slotId);
+        
+        veterinarianTimeSlotRepository.deleteById(slotId);
 }
 
 //Delete Vet
@@ -87,8 +93,10 @@ public class VeterinarianService {
                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
        
        // Cập nhật các booking liên quan
+       bookingRepository.updateSlotToNullByVeterinarianId(veterinarianId);
        bookingRepository.updateVeterinarianToNull(veterinarianId);
-       
+
+       //Xóa các slot liên quan
        veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
        veterinarianRepository.deleteById(veterinarianId);
    }
