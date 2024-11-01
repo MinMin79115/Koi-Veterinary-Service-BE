@@ -111,6 +111,10 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
+        if (request.getNote() != null) {
+            booking.setNote(request.getNote());
+        }
+
         if (request.getStatus() != null) {
             // Check if the new status is COMPLETED and if there is an associated timeSlot
             if (request.getStatus() == BookingStatus.COMPLETED && booking.getSlot() != null) {
