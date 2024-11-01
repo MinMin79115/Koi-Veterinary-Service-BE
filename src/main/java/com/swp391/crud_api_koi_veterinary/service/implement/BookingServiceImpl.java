@@ -2,6 +2,7 @@ package com.swp391.crud_api_koi_veterinary.service.implement;
 
 import com.swp391.crud_api_koi_veterinary.enums.BookingStatus;
 import com.swp391.crud_api_koi_veterinary.enums.SlotStatus;
+import com.swp391.crud_api_koi_veterinary.enums.VetState;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.BookingRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.BookingStatusUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.entity.*;
@@ -43,6 +44,8 @@ public class BookingServiceImpl implements BookingService {
         booking.setServicesDetail(servicesDetail);
         if (veterinarian != null) {
             booking.setVeterinarian(veterinarian);
+            veterinarian.setState(VetState.WORKING);
+            veterinarianRepository.save(veterinarian);
         }
         if (timeSlot != null) {
             // Check if the timeSlot is already UNAVAILABLE
@@ -121,6 +124,10 @@ public class BookingServiceImpl implements BookingService {
                 VeterinarianTimeSlot timeSlot = booking.getSlot();
                 timeSlot.setSlotStatus(SlotStatus.AVAILABLE); // Set slot status to AVAILABLE
                 veterinarianTimeSlotRepository.save(timeSlot); // Save the updated timeSlot
+            } else if (request.getStatus() == BookingStatus.COMPLETED) {
+                Veterinarian veterinarian = booking.getVeterinarian();
+                veterinarian.setState(VetState.ONLINE);
+                veterinarianRepository.save(veterinarian);
             }
             booking.setStatus(request.getStatus());
         }
@@ -137,6 +144,10 @@ public class BookingServiceImpl implements BookingService {
             VeterinarianTimeSlot timeSlot = booking.getSlot();
             timeSlot.setSlotStatus(SlotStatus.AVAILABLE); // Set slot status to AVAILABLE
             veterinarianTimeSlotRepository.save(timeSlot); // Save the updated timeSlot
+        } else {
+            Veterinarian veterinarian = booking.getVeterinarian();
+            veterinarian.setState(VetState.ONLINE);
+            veterinarianRepository.save(veterinarian);
         }
 
         booking.setStatus(BookingStatus.CANCELLED);
