@@ -41,7 +41,7 @@ public class PaymentController {
             return new RedirectView("http://localhost:5173/booking-detail");
         }
     }
-//API lấy bill theo bookingId
+//API lấy tất cả các bill
     @GetMapping
     public List<Bill> getAllBill() {
         return billService.getAllBill();
