@@ -1,6 +1,8 @@
 package com.swp391.crud_api_koi_veterinary.service;
 
+import com.swp391.crud_api_koi_veterinary.enums.ServiceType;
 import com.swp391.crud_api_koi_veterinary.enums.SlotStatus;
+import com.swp391.crud_api_koi_veterinary.enums.VetState;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianCreationRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotCreationRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotUpdateRequest;
@@ -44,8 +46,17 @@ public class VeterinarianService {
         Veterinarian veterinarian = new Veterinarian();
         veterinarian.setUser(user);
         if (servicesType != null) {
-            veterinarian.setServiceTypeId(servicesType);
+            if (servicesType.getService_type() == ServiceType.Online){
+                veterinarian.setServiceTypeId(servicesType);
+                veterinarian.setState(VetState.ONLINE);
+            } else {
+                veterinarian.setServiceTypeId(servicesType);
+                veterinarian.setState(VetState.OFFLINE);
+            }
+        } else {
+            veterinarian.setState(VetState.OFFLINE);
         }
+
         return veterinarianRepository.save(veterinarian);
     }
 
@@ -127,19 +138,23 @@ public class VeterinarianService {
         TimeSlot timeSlot = timeSlotRepository.findById(request.getSlotTimeId())
                 .orElseThrow(() -> new RuntimeException("Slot time not found"));
 
-        if (veterinarian != null) {
-            slot.setVeterinarian(veterinarian);
-        }
 
-        if (timeSlot != null) {
-            slot.setTimeSlot(timeSlot);
-        }
+            if (slot.getSlotStatus() == SlotStatus.AVAILABLE) {
+                if (veterinarian != null) {
+                    slot.setVeterinarian(veterinarian);
+                }
 
-        if (request.getStatus() != null) {
-            slot.setSlotStatus(request.getStatus());
-        }
+                if (timeSlot != null) {
+                    slot.setTimeSlot(timeSlot);
+                }
 
-        return veterinarianTimeSlotRepository.save(slot);
+                if (request.getStatus() != null) {
+                    slot.setSlotStatus(request.getStatus());
+                }
+            }else{
+                throw new RuntimeException("Can not update because slot is booked!");
+            }
+            return veterinarianTimeSlotRepository.save(slot);
     }
 
 }

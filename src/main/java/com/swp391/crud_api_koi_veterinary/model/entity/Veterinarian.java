@@ -1,5 +1,5 @@
 package com.swp391.crud_api_koi_veterinary.model.entity;
-
+import com.swp391.crud_api_koi_veterinary.enums.VetState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,4 +24,8 @@ public class Veterinarian {
     @ManyToOne
     @JoinColumn(name = "service_type_id", nullable = true)
     private ServicesType serviceTypeId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false)
+    private VetState state;
 }
