@@ -7,6 +7,8 @@ import com.swp391.crud_api_koi_veterinary.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FeedbackService {
@@ -23,5 +25,32 @@ public class FeedbackService {
         feedback.setFeedback(request.getFeedback());
 
         return feedbackRepository.save(feedback);
+    }
+
+    public Feedback getFeedbackById(int feedbackId) {
+        return feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new RuntimeException("Feedback not found"));
+    }
+
+    public List<Feedback> getAllFeedbacks() {
+        return feedbackRepository.findAll();
+    }
+
+    public Feedback updateFeedback(int feedbackId, FeedbackRequest request) {
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new RuntimeException("Feedback not found"));
+
+        if (request.getRating() > 0) {
+            feedback.setRating(request.getRating());
+        }
+        if (request.getFeedback() != null && !request.getFeedback().isEmpty()) {
+            feedback.setFeedback(request.getFeedback());
+        }
+
+        return feedbackRepository.save(feedback);
+    }
+
+    public void deleteFeedback(int feedbackId) {
+        feedbackRepository.deleteById(feedbackId);
     }
 }
