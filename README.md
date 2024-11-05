@@ -10,6 +10,7 @@
 - Đặt lịch hẹn
 - Thanh toán qua VNPay
 - Gửi email
+- Quản lý phản hồi từ khách hàng
 
 ## Công nghệ sử dụng
 
@@ -64,6 +65,14 @@
 ### Gửi email
 
 - `POST /api/v1/mail/send/{mail}`: Gửi email
+
+### Quản lý phản hồi
+
+- `POST /api/v1/feedback`: Tạo phản hồi mới
+- `GET /api/v1/feedback`: Lấy danh sách phản hồi
+- `GET /api/v1/feedback/{feedbackId}`: Lấy thông tin phản hồi theo ID
+- `PUT /api/v1/feedback/{feedbackId}`: Cập nhật phản hồi
+- `DELETE /api/v1/feedback/{feedbackId}`: Xóa phản hồi
 
 ## Cấu hình
 
