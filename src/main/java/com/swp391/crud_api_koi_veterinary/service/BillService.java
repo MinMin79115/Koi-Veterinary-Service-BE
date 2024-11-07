@@ -1,16 +1,18 @@
 package com.swp391.crud_api_koi_veterinary.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.swp391.crud_api_koi_veterinary.enums.PaymentStatus;
 import com.swp391.crud_api_koi_veterinary.model.entity.Bill;
 import com.swp391.crud_api_koi_veterinary.model.entity.Booking;
 import com.swp391.crud_api_koi_veterinary.repository.BillRepository;
 import com.swp391.crud_api_koi_veterinary.repository.BookingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class BillService {
         return billRepository.save(bill);
     }
 
-//lấy bill theo booking
+    // lấy bill theo booking
     public List<Bill> getAllBill() {
         return billRepository.findAll();
     }

@@ -1,5 +1,11 @@
 package com.swp391.crud_api_koi_veterinary.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.swp391.crud_api_koi_veterinary.enums.ServiceType;
 import com.swp391.crud_api_koi_veterinary.enums.SlotStatus;
 import com.swp391.crud_api_koi_veterinary.enums.VetState;
@@ -7,14 +13,19 @@ import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianCreation
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotCreationRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianSlotUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.VeterinarianUpdateRequest;
-import com.swp391.crud_api_koi_veterinary.model.entity.*;
-import com.swp391.crud_api_koi_veterinary.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.swp391.crud_api_koi_veterinary.model.entity.ServicesType;
+import com.swp391.crud_api_koi_veterinary.model.entity.TimeSlot;
+import com.swp391.crud_api_koi_veterinary.model.entity.UserAccount;
+import com.swp391.crud_api_koi_veterinary.model.entity.Veterinarian;
+import com.swp391.crud_api_koi_veterinary.model.entity.VeterinarianTimeSlot;
+import com.swp391.crud_api_koi_veterinary.repository.BookingRepository;
+import com.swp391.crud_api_koi_veterinary.repository.ServiceTypeRepository;
+import com.swp391.crud_api_koi_veterinary.repository.TimeSlotRepository;
+import com.swp391.crud_api_koi_veterinary.repository.UserRepository;
+import com.swp391.crud_api_koi_veterinary.repository.VeterinarianRepository;
+import com.swp391.crud_api_koi_veterinary.repository.VeterinarianTimeSlotRepository;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -28,25 +39,26 @@ public class VeterinarianService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
 
-//Tạo Vet
+    // Tạo Vet
     public Veterinarian createVeterinarian(VeterinarianCreationRequest request, int userId) {
-        
+
         // Kiểm tra xem userId đã tồn tại trong Veterinarian chưa
         if (veterinarianRepository.existsByUserId(userId)) {
             throw new RuntimeException("Veterinarian is already exist");
         }
-        
+
         UserAccount user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        ServicesType servicesType = request.getServiceTypeId() != null ?
-                serviceTypeRepository.findById(request.getServiceTypeId())
-                        .orElseThrow(() -> new RuntimeException("Service type not found")) : null;
+
+        ServicesType servicesType = request.getServiceTypeId() != null
+                ? serviceTypeRepository.findById(request.getServiceTypeId())
+                        .orElseThrow(() -> new RuntimeException("Service type not found"))
+                : null;
 
         Veterinarian veterinarian = new Veterinarian();
         veterinarian.setUser(user);
         if (servicesType != null) {
-            if (servicesType.getService_type() == ServiceType.Online){
+            if (servicesType.getService_type() == ServiceType.Online) {
                 veterinarian.setServiceTypeId(servicesType);
                 veterinarian.setState(VetState.ONLINE);
             } else {
@@ -60,7 +72,7 @@ public class VeterinarianService {
         return veterinarianRepository.save(veterinarian);
     }
 
-//Tạo Vet Slot
+    // Tạo Vet Slot
     public VeterinarianTimeSlot createVeterinarianSlot(VeterinarianSlotCreationRequest request) {
         Veterinarian veterinarian = veterinarianRepository.findById(request.getVeterinarianId())
                 .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
@@ -76,58 +88,58 @@ public class VeterinarianService {
         return veterinarianTimeSlotRepository.save(veterinarianTimeSlot);
     }
 
-//Danh sách tất cả Slot
+    // Danh sách tất cả Slot
     public List<VeterinarianTimeSlot> getAllSlots() {
         return veterinarianTimeSlotRepository.findAll();
     }
 
-//Lấy tất cả Vet
-   public List<Veterinarian> getAllVeterinarian() {
+    // Lấy tất cả Vet
+    public List<Veterinarian> getAllVeterinarian() {
         return veterinarianRepository.findAll();
-   }
+    }
 
-//Delete Slot
-   @Transactional
-   public void deleteSlot(int slotId) {
+    // Delete Slot
+    @Transactional
+    public void deleteSlot(int slotId) {
         VeterinarianTimeSlot timeSlot = veterinarianTimeSlotRepository.findById(slotId)
-                        .orElseThrow(() -> new RuntimeException("Slot not found"));
+                .orElseThrow(() -> new RuntimeException("Slot not found"));
 
         bookingRepository.updateSlotToNullBySlot(slotId);
-        
+
         veterinarianTimeSlotRepository.deleteById(slotId);
-}
+    }
 
-//Delete Vet
-   @Transactional
-   public void deleteVeterinarian(int veterinarianId) {
-       Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
-               .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
-       
-       // Cập nhật các booking liên quan
-       bookingRepository.updateSlotToNullByVeterinarianId(veterinarianId);
-       bookingRepository.updateVeterinarianToNull(veterinarianId);
+    // Delete Vet
+    @Transactional
+    public void deleteVeterinarian(int veterinarianId) {
+        Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
+                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
 
-       //Xóa các slot liên quan
-       veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
-       veterinarianRepository.deleteById(veterinarianId);
-   }
+        // Cập nhật các booking liên quan
+        bookingRepository.updateSlotToNullByVeterinarianId(veterinarianId);
+        bookingRepository.updateVeterinarianToNull(veterinarianId);
 
-//Update Vet
-    public Veterinarian updateVet(int veterinarianId, VeterinarianUpdateRequest request){
+        // Xóa các slot liên quan
+        veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
+        veterinarianRepository.deleteById(veterinarianId);
+    }
+
+    // Update Vet
+    public Veterinarian updateVet(int veterinarianId, VeterinarianUpdateRequest request) {
         Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
                 .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
 
         ServicesType servicesType = serviceTypeRepository.findById(request.getServiceTypeId())
                 .orElseThrow(() -> new RuntimeException("Type not found"));
 
-        if (servicesType != null){
+        if (servicesType != null) {
             veterinarian.setServiceTypeId(servicesType);
         }
 
         return veterinarianRepository.save(veterinarian);
     }
 
-//Update Slot
+    // Update Slot
     public VeterinarianTimeSlot updateVetSlot(int slotId, VeterinarianSlotUpdateRequest request) {
         VeterinarianTimeSlot slot = veterinarianTimeSlotRepository.findById(slotId)
                 .orElseThrow(() -> new RuntimeException("Slot not found"));
@@ -138,23 +150,22 @@ public class VeterinarianService {
         TimeSlot timeSlot = timeSlotRepository.findById(request.getSlotTimeId())
                 .orElseThrow(() -> new RuntimeException("Slot time not found"));
 
-
-            if (slot.getSlotStatus() == SlotStatus.AVAILABLE) {
-                if (veterinarian != null) {
-                    slot.setVeterinarian(veterinarian);
-                }
-
-                if (timeSlot != null) {
-                    slot.setTimeSlot(timeSlot);
-                }
-
-                if (request.getStatus() != null) {
-                    slot.setSlotStatus(request.getStatus());
-                }
-            }else{
-                throw new RuntimeException("Can not update because slot is booked!");
+        if (slot.getSlotStatus() == SlotStatus.AVAILABLE) {
+            if (veterinarian != null) {
+                slot.setVeterinarian(veterinarian);
             }
-            return veterinarianTimeSlotRepository.save(slot);
+
+            if (timeSlot != null) {
+                slot.setTimeSlot(timeSlot);
+            }
+
+            if (request.getStatus() != null) {
+                slot.setSlotStatus(request.getStatus());
+            }
+        } else {
+            throw new RuntimeException("Can not update because slot is booked!");
+        }
+        return veterinarianTimeSlotRepository.save(slot);
     }
 
 }

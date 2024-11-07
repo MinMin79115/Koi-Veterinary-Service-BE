@@ -35,9 +35,9 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode("G5kYQ94uZHb1nV0OFT29KxRYwDdB3P8JLZmspqX6oMcg7fAhNWUtlrI2vVCjaXe1"));
+        return Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode("G5kYQ94uZHb1nV0OFT29KxRYwDdB3P8JLZmspqX6oMcg7fAhNWUtlrI2vVCjaXe1"));
     }
 
     public String getUsernameFromJWT(String token) {
@@ -67,4 +67,3 @@ public class JwtServiceImpl implements JwtService {
         return null;
     }
 }
-
