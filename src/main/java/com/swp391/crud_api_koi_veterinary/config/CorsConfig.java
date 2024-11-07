@@ -67,6 +67,7 @@ public class CorsConfig {
     private String[] getCorsAllowed() {
         List<String> corsAllowOrigins = new ArrayList<>();
         corsAllowOrigins.add("http://localhost:5173");
+        corsAllowOrigins.add("http://170.64.244.85");
         return corsAllowOrigins.toArray(new String[0]);
     }
 }

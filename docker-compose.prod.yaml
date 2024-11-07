@@ -23,6 +23,8 @@ services:
     container_name: koiveterinary_mysql_database
     image: mysql
     restart: always
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: koiveterian
