@@ -56,7 +56,9 @@ public class BookingServiceImpl implements BookingService {
         booking.setServicesDetail(servicesDetail);
         if (veterinarian != null) {
             booking.setVeterinarian(veterinarian);
+            if (timeSlot == null) {
             veterinarian.setState(VetState.WORKING);
+            }
             veterinarianRepository.save(veterinarian);
         }
         if (timeSlot != null) {
@@ -131,10 +133,9 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        Veterinarian veterinarian1 = veterinarianRepository.findById(request.getVeterinarianId())
-                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
-
         if (request.getVeterinarianId() != null){
+            Veterinarian veterinarian1 = veterinarianRepository.findById(request.getVeterinarianId())
+                    .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
             booking.setVeterinarian(veterinarian1);
         }
 
@@ -167,9 +168,9 @@ public class BookingServiceImpl implements BookingService {
         // Check if the booking has an associated timeSlot
         if (booking.getSlot() != null) {
             VeterinarianTimeSlot timeSlot = booking.getSlot();
-            timeSlot.setSlotStatus(SlotStatus.AVAILABLE); // Set slot status to AVAILABLE
-            veterinarianTimeSlotRepository.save(timeSlot); // Save the updated timeSlot
-        } else {
+            timeSlot.setSlotStatus(SlotStatus.AVAILABLE);
+            veterinarianTimeSlotRepository.save(timeSlot);
+        } else if (booking.getVeterinarian() != null) {
             Veterinarian veterinarian = booking.getVeterinarian();
             veterinarian.setState(VetState.ONLINE);
             veterinarianRepository.save(veterinarian);
