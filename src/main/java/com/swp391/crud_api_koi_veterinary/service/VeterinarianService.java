@@ -102,12 +102,21 @@ public class VeterinarianService {
    public void deleteVeterinarian(int veterinarianId) {
        Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
-       
+
+       // Check if the veterinarian is working
+       if (veterinarian.getState() == VetState.WORKING) {
+           throw new RuntimeException("Unable to delete veterinarian: currently working.");
+       }
+       // Check if there are any slots of the vet with UNAVAILABLE status
+       else if (veterinarianTimeSlotRepository.existsByVeterinarianAndSlotStatus(veterinarian, SlotStatus.UNAVAILABLE)) {
+           throw new RuntimeException("Unable to delete veterinarian: a slot of this veterinarian is booked.");
+       }
+
        // Cập nhật các booking liên quan
        bookingRepository.updateSlotToNullByVeterinarianId(veterinarianId);
        bookingRepository.updateVeterinarianToNull(veterinarianId);
 
-       //Xóa các slot liên quan
+       // Xóa các slot liên quan
        veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
        veterinarianRepository.deleteById(veterinarianId);
    }
@@ -132,19 +141,16 @@ public class VeterinarianService {
         VeterinarianTimeSlot slot = veterinarianTimeSlotRepository.findById(slotId)
                 .orElseThrow(() -> new RuntimeException("Slot not found"));
 
-        Veterinarian veterinarian = veterinarianRepository.findById(request.getVeterinarianId())
-                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
-
-        TimeSlot timeSlot = timeSlotRepository.findById(request.getSlotTimeId())
-                .orElseThrow(() -> new RuntimeException("Slot time not found"));
-
-
             if (slot.getSlotStatus() == SlotStatus.AVAILABLE) {
-                if (veterinarian != null) {
+                if (request.getVeterinarianId() != null) {
+                    Veterinarian veterinarian = veterinarianRepository.findById(request.getVeterinarianId())
+                            .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
                     slot.setVeterinarian(veterinarian);
                 }
 
-                if (timeSlot != null) {
+                if (request.getSlotTimeId() != null) {
+                    TimeSlot timeSlot = timeSlotRepository.findById(request.getSlotTimeId())
+                            .orElseThrow(() -> new RuntimeException("Slot time not found"));
                     slot.setTimeSlot(timeSlot);
                 }
 
