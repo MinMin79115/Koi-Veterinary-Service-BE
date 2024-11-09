@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingStatusUpdateRequest {
+    Integer veterinarianId;
     String note;
     BookingStatus status;
 }

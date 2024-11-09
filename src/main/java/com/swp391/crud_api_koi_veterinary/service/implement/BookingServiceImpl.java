@@ -131,6 +131,13 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
+        Veterinarian veterinarian1 = veterinarianRepository.findById(request.getVeterinarianId())
+                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
+
+        if (request.getVeterinarianId() != null){
+            booking.setVeterinarian(veterinarian1);
+        }
+
         if (request.getNote() != null) {
             booking.setNote(request.getNote());
         }
