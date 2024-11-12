@@ -1,0 +1,47 @@
+on:
+  push:
+    branches: ["main", "deploy/add_deploy_scripts"]
+
+jobs:
+  koi-api-build:
+    name: Build source code to Docker image
+    runs-on: ubuntu-22.04
+    env:
+      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+    steps:
+      - name: Checkout Develop
+        uses: actions/checkout@v3
+      - name: DockerHub Login
+        uses: docker/login-action@v3.1.0
+        with:
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_TOKEN}}
+      - name: Build Image And Push
+        run: docker compose build api && docker compose push api
+
+  koi-api-deploy:
+    name: Deploy KOI API
+    runs-on: mint-server
+    needs: koi-api-build
+    env:
+      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+      DB_USERNAME: ${{secrets.DB_USERNAME}}
+      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+      MAIL_USERNAME: ${{secrets.MAIL_USERNAME}}
+      MAIL_PASSWORD: ${{secrets.MAIL_PASSWORD}}
+      VNPAY_TMN_CODE: ${{secrets.VNPAY_TMN_CODE}}
+      VNPAY_SECRET_KEY: ${{secrets.VNPAY_SECRET_KEY}}
+      VNPAY_RETURN_HOST: ${{secrets.VNPAY_RETURN_HOST}}
+    steps:
+      - name: Checkout Develop
+        uses: actions/checkout@v3
+      - name: DockerHub Login
+        uses: docker/login-action@v3.1.0
+        with:
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_TOKEN}}
+      - name: Stop API
+        run: docker compose -f docker-compose.prod.yaml -p koi-application down api --rmi all -v
+        continue-on-error: true
+      - name: Deploy API
+        run: docker compose -f docker-compose.prod.yaml -p koi-application up -d

@@ -36,9 +36,9 @@ public class PaymentController {
             int bookingId = Integer.parseInt(request.getParameter("vnp_TxnRef"));
             BigDecimal amount = new BigDecimal(request.getParameter("vnp_Amount")).divide(new BigDecimal(100));
             billService.createBill(bookingId, amount, "VNPay");
-            return new RedirectView("http://localhost:5173/success?bookingId=" + bookingId + "&amount=" + amount + "&paymentMethod=VNPay");
+            return new RedirectView("http://170.64.244.85/success?bookingId=" + bookingId + "&amount=" + amount + "&paymentMethod=VNPay");
         } else {
-            return new RedirectView("http://localhost:5173/booking-detail");
+            return new RedirectView("http://170.64.244.85/booking-detail");
         }
     }
 //API lấy tất cả các bill

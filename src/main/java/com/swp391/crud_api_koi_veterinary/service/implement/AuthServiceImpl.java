@@ -1,15 +1,7 @@
 package com.swp391.crud_api_koi_veterinary.service.implement;
 
-import com.swp391.crud_api_koi_veterinary.enums.Role;
-import com.swp391.crud_api_koi_veterinary.model.dto.request.*;
-import com.swp391.crud_api_koi_veterinary.model.dto.response.AuthenticationResponse;
-import com.swp391.crud_api_koi_veterinary.model.entity.UserAccount;
-import com.swp391.crud_api_koi_veterinary.repository.UserRepository;
-import com.swp391.crud_api_koi_veterinary.service.AuthService;
-import com.swp391.crud_api_koi_veterinary.service.EmailService;
-import com.swp391.crud_api_koi_veterinary.service.JwtService;
-import jakarta.mail.MessagingException;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +11,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import com.swp391.crud_api_koi_veterinary.enums.Role;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.AuthenticationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.EmailForgetRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.ResetPasswordRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.StaffCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.UserCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.response.AuthenticationResponse;
+import com.swp391.crud_api_koi_veterinary.model.entity.UserAccount;
+import com.swp391.crud_api_koi_veterinary.repository.UserRepository;
+import com.swp391.crud_api_koi_veterinary.service.AuthService;
+import com.swp391.crud_api_koi_veterinary.service.EmailService;
+import com.swp391.crud_api_koi_veterinary.service.JwtService;
+
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +40,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     request.getUsername(),
-                    request.getPassword()
-            ));
+                    request.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             var user = userRepository.findUserByUsername(authentication.getName()).orElseThrow();
             var accessToken = jwtService.generateAccessToken(authentication);
@@ -60,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.findUserByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already in use");
         }
-        
+
         UserAccount user = new UserAccount();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -73,8 +78,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         String accessToken = jwtService.generateAccessToken(authentication);
         return AuthenticationResponse.builder()
@@ -101,8 +105,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getPhone(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getPhone(), request.getPassword()));
 
         String accessToken = jwtService.generateAccessToken(authentication);
         return AuthenticationResponse.builder()
@@ -111,7 +114,8 @@ public class AuthServiceImpl implements AuthService {
                 .finishTime(LocalDateTime.now())
                 .build();
     }
-//quên mk
+
+    // quên mk
     public void forgetPassword(EmailForgetRequest request) throws MessagingException {
         UserAccount userAccount = userRepository.findUserByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email not found"));
@@ -121,7 +125,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-//Đặt lại password
+    // Đặt lại password
     @Override
     public void resetPassword(ResetPasswordRequest request) {
         UserAccount userAccount = userRepository.findUserByUsername(request.getUsername())
@@ -133,4 +137,3 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 }
-

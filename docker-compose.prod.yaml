@@ -1,0 +1,39 @@
+services:
+  api:
+    container_name: koiveterinary_api
+    image: ${DOCKER_USERNAME}/koiveterinary:latest
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: koiveterian
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      VNPAY_TMN_CODE: ${VNPAY_TMN_CODE}
+      VNPAY_SECRET_KEY: ${VNPAY_SECRET_KEY}
+      VNPAY_RETURN_HOST: ${VNPAY_RETURN_HOST}
+      TZ: Asia/Ho_Chi_Minh
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - koiveterinary_network
+
+  db:
+    container_name: koiveterinary_mysql_database
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: koiveterian
+      TZ: Asia/Ho_Chi_Minh
+      
+    networks:
+      - koiveterinary_network
+
+networks:
+  koiveterinary_network:
+    name: koiveterinary_network
