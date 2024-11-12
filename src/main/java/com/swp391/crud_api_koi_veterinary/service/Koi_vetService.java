@@ -1,13 +1,17 @@
 package com.swp391.crud_api_koi_veterinary.service;
 
 import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceTypeUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.entity.Services;
+import com.swp391.crud_api_koi_veterinary.model.entity.ServicesType;
 import com.swp391.crud_api_koi_veterinary.repository.ServiceRepository;
+import com.swp391.crud_api_koi_veterinary.repository.ServiceTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +20,7 @@ import java.util.Optional;
 public class Koi_vetService{
     @Autowired
     private final ServiceRepository serviceRepository;
+    private final ServiceTypeRepository serviceTypeRepository;
 
 //1. Tạo 1 Service
     public Services createService(ServiceCreationRequest request) {
@@ -57,5 +62,21 @@ public class Koi_vetService{
     public Optional<Services> getServiceById(int serviceId) {
         return Optional.ofNullable(serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new RuntimeException("Service not found")));
+    }
+
+//6. Update service Type
+    public ServicesType updateServiceType(int serviceTypeId, ServiceTypeUpdateRequest request) {
+        ServicesType service = serviceTypeRepository.findById(serviceTypeId)
+                .orElseThrow(() -> new RuntimeException("Service Type not found"));
+
+        if (request.getPrice() != null) {
+            if (request.getPrice().compareTo(new BigDecimal("1000")) >= 0) {
+                service.setPrice(request.getPrice());
+            } else {
+                throw new RuntimeException("Price must be greater than 1000");
+            }
+        }
+
+        return serviceTypeRepository.save(service);
     }
 }
