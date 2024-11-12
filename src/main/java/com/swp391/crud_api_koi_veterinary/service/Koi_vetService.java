@@ -79,4 +79,9 @@ public class Koi_vetService{
 
         return serviceTypeRepository.save(service);
     }
+//7. Lấy tất cả service type
+    public List<ServicesType> getAllServiceType() {
+    return serviceTypeRepository.findAll();
+}
+
 }

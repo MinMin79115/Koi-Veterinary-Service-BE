@@ -64,4 +64,11 @@ public class ServicesController {
     public ServicesType updateServiceTypePrice(@PathVariable int serviceTypeId, @RequestBody ServiceTypeUpdateRequest request){
         return koi_vetService.updateServiceType(serviceTypeId, request);
     }
+
+    @GetMapping("/type")
+    @Operation(summary = "Get all service type", description = "Retrieves a list of all service type")
+    public List<ServicesType> listServiceType(){
+        return koi_vetService.getAllServiceType();
+    }
+
 }
