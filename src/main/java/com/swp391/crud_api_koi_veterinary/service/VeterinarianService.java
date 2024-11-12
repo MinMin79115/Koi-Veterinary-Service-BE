@@ -109,22 +109,31 @@ public class VeterinarianService {
         veterinarianTimeSlotRepository.deleteById(slotId);
     }
 
-    // Delete Vet
-    @Transactional
-    public void deleteVeterinarian(int veterinarianId) {
-        Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
-                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
+//Delete Vet
+   @Transactional
+   public void deleteVeterinarian(int veterinarianId) {
+       Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
+               .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
 
-        // Cập nhật các booking liên quan
-        bookingRepository.updateSlotToNullByVeterinarianId(veterinarianId);
-        bookingRepository.updateVeterinarianToNull(veterinarianId);
+       // Check if the veterinarian is working
+       if (veterinarian.getState() == VetState.WORKING) {
+           throw new RuntimeException("Unable to delete veterinarian: currently working.");
+       }
+       // Check if there are any slots of the vet with UNAVAILABLE status
+       else if (veterinarianTimeSlotRepository.existsByVeterinarianAndSlotStatus(veterinarian, SlotStatus.UNAVAILABLE)) {
+           throw new RuntimeException("Unable to delete veterinarian: a slot of this veterinarian is booked.");
+       }
 
-        // Xóa các slot liên quan
-        veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
-        veterinarianRepository.deleteById(veterinarianId);
-    }
+       // Cập nhật các booking liên quan
+       bookingRepository.updateSlotToNullByVeterinarianId(veterinarianId);
+       bookingRepository.updateVeterinarianToNull(veterinarianId);
 
-    // Update Vet
+       // Xóa các slot liên quan
+       veterinarianTimeSlotRepository.deleteByVeterinarian(veterinarian);
+       veterinarianRepository.deleteById(veterinarianId);
+   }
+
+//Update Vet
     public Veterinarian updateVet(int veterinarianId, VeterinarianUpdateRequest request) {
         Veterinarian veterinarian = veterinarianRepository.findById(veterinarianId)
                 .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
@@ -144,20 +153,19 @@ public class VeterinarianService {
         VeterinarianTimeSlot slot = veterinarianTimeSlotRepository.findById(slotId)
                 .orElseThrow(() -> new RuntimeException("Slot not found"));
 
-        Veterinarian veterinarian = veterinarianRepository.findById(request.getVeterinarianId())
-                .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
+            if (slot.getSlotStatus() == SlotStatus.AVAILABLE) {
+                if (request.getVeterinarianId() != null) {
+                    Veterinarian veterinarian = veterinarianRepository.findById(request.getVeterinarianId())
+                            .orElseThrow(() -> new RuntimeException("Veterinarian not found"));
+                    slot.setVeterinarian(veterinarian);
+             }
 
-        TimeSlot timeSlot = timeSlotRepository.findById(request.getSlotTimeId())
-                .orElseThrow(() -> new RuntimeException("Slot time not found"));
+             if (request.getSlotTimeId() != null) {
+                    TimeSlot timeSlot = timeSlotRepository.findById(request.getSlotTimeId())
+                            .orElseThrow(() -> new RuntimeException("Slot time not found"));
+                    slot.setTimeSlot(timeSlot);
+             }
 
-        if (slot.getSlotStatus() == SlotStatus.AVAILABLE) {
-            if (veterinarian != null) {
-                slot.setVeterinarian(veterinarian);
-            }
-
-            if (timeSlot != null) {
-                slot.setTimeSlot(timeSlot);
-            }
 
             if (request.getStatus() != null) {
                 slot.setSlotStatus(request.getStatus());

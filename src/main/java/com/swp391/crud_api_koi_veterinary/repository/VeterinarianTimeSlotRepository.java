@@ -16,4 +16,6 @@ public interface VeterinarianTimeSlotRepository extends JpaRepository<Veterinari
 
     // Thêm phương thức xóa TimeSlot theo veterinarianId
     void deleteByVeterinarian(Veterinarian veterinarian);
+
+    boolean existsByVeterinarianAndSlotStatus(Veterinarian veterinarian, SlotStatus slotStatus);
 }

@@ -1,8 +1,10 @@
 package com.swp391.crud_api_koi_veterinary.controller;
 
 import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceCreationRequest;
+import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceTypeUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.dto.request.ServiceUpdateRequest;
 import com.swp391.crud_api_koi_veterinary.model.entity.Services;
+import com.swp391.crud_api_koi_veterinary.model.entity.ServicesType;
 import com.swp391.crud_api_koi_veterinary.service.Koi_vetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,6 +57,18 @@ public class ServicesController {
     public ResponseEntity<Optional<Services>> getServiceById(@PathVariable int serviceId) {
         Optional<Services> koiVetServices = koi_vetService.getServiceById(serviceId);
         return ResponseEntity.ok(koiVetServices);
+    }
+
+    @PutMapping("type/{serviceTypeId}")
+    @Operation(summary = "Update a serviceType Price", description = "Updates an existing serviceType with the provided price")
+    public ServicesType updateServiceTypePrice(@PathVariable int serviceTypeId, @RequestBody ServiceTypeUpdateRequest request){
+        return koi_vetService.updateServiceType(serviceTypeId, request);
+    }
+
+    @GetMapping("/type")
+    @Operation(summary = "Get all service type", description = "Retrieves a list of all service type")
+    public List<ServicesType> listServiceType(){
+        return koi_vetService.getAllServiceType();
     }
 
 }
