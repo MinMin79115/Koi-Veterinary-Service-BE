@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/customers/**").authenticated()
                         .requestMatchers("/services/**").authenticated()
+                        .requestMatchers("/services/type").permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()));
